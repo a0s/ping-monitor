@@ -1,3 +1,9 @@
+PATH
+  remote: ../icmp4em
+  specs:
+    icmp4em (0.0.3)
+      eventmachine (~> 1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -8,6 +14,7 @@ GEM
       tzinfo (~> 1.1)
     concurrent-ruby (1.0.5)
     diff-lcs (1.3)
+    eventmachine (1.2.3)
     i18n (0.8.1)
     minitest (5.10.1)
     rake (12.0.0)
@@ -38,6 +45,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activesupport
+  eventmachine (~> 1)
+  icmp4em!
   rake
   rspec (~> 3)
   ruby-app
