@@ -20,6 +20,9 @@ class Application
 end
 
 require 'ruby-app/boot'
+
+ENV['RACK_ENV'] = ENV['APP_ENV'] = ENV['RAILS_ENV'] = App.env
+
 require 'pp'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/numeric/time'
