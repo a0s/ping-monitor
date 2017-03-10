@@ -34,6 +34,8 @@ class Ip < Sequel::Model
   end
 
   def self.clean_orphaned!
-    self.orphaned.update(start_checking_at: nil)
+    App.logger.debug { "Clean orphaned..." }
+    size = self.orphaned.update(start_checking_at: nil)
+    App.logger.warn { "Cleaned #{size} orphaned" } if size > 0
   end
 end
