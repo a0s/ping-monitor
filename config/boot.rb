@@ -10,11 +10,7 @@ class Application
     end
 
     def name
-      'pingmon'
-    end
-
-    def default_db
-      "postgres://#{App.name}:#{App.name}@localhost/#{App.name}"
+      'pingmonitor'
     end
   end
 end
