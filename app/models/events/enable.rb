@@ -1,0 +1,2 @@
+class Enable < Event
+end

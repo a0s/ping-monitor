@@ -2,9 +2,14 @@ source 'https://rubygems.org'
 
 gem 'rake', require: false
 gem 'ruby-app'
+gem 'pg'
+gem 'sequel'
+gem 'sequel-rake', git: 'https://github.com/a0s/sequel-rake.git'
 gem 'activesupport'
-gem 'eventmachine', '~> 1'
-gem 'icmp4em', path: '../icmp4em' #git: 'https://github.com/michel/icmp4em.git'
+gem 'eventmachine'
+gem 'icmp4em', git: 'https://github.com/a0s/icmp4em.git'
+gem 'sinatra'
+gem 'thin'
 
 group :production do
 end

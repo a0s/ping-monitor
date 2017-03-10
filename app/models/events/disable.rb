@@ -1,0 +1,2 @@
+class Disable < Event
+end
