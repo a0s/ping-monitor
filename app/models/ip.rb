@@ -18,11 +18,19 @@ class Ip < Sequel::Model
   end
 
   def enable!
-    update(enabled: true)
+    return if enabled
+    DB.transaction do
+      Enable.create(ip_id: id)
+      update(enabled: true)
+    end
   end
 
   def disable!
-    update(enabled: false)
+    return unless enabled
+    DB.transaction do
+      Disable.create(ip_id: id)
+      update(enabled: false)
+    end
   end
 
   def self.clean_orphaned!

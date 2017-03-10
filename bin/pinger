@@ -64,10 +64,10 @@ EM.run do
         ip.save
 
         if result == :ok
-          st = Statistic.create(created_at: ip.last_checked_at, latency: latency)
+          st = Statistic.create(ip_id: ip.id, created_at: ip.last_checked_at, latency: latency)
           App.logger.debug { "Ok: #{st.inspect}" }
         elsif result == :fail
-          fl = Fail.create(created_at: ip.last_checked_at)
+          fl = Fail.create(ip_id: ip.id, created_at: ip.last_checked_at)
           App.logger.debug { "Fail: #{fl.inspect}" }
         else
           fail("Unknown result in response #{[result, host, latency, exception, ip].inspect}")
