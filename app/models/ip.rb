@@ -14,7 +14,7 @@ class Ip < Sequel::Model
 
   def after_create
     super
-    Enable.create(ip_id: id)
+    enable!
   end
 
   def enable!
