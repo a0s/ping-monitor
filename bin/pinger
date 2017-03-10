@@ -3,12 +3,6 @@
 # TODO bulk update
 # TODO ruby-em-pg-client + em-pg-sequel
 # TODO sequel-pg_advisory_locking
-# http://dklab.ru/chicken/nablas/53.html
-# http://forum.dklab.ru/viewtopic.php?t=32211
-# enable_seqscan и enable_bitmapscan в off, enable_tidscan ?
-# https://hashrocket.com/blog/posts/advisory-locks-in-postgres
-# http://www.practiceovertheory.com/blog/2013/07/06/distributed-locking-in-postgres/
-# https://github.com/chanks/que
 
 require File.expand_path(File.join(File.dirname(__FILE__), %w{.. config environment}))
 require 'icmp4em'
