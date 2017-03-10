@@ -21,3 +21,5 @@ end
 
 require 'ruby-app/boot'
 require 'pp'
+require 'active_support/core_ext/object/blank'
+require 'active_support/core_ext/numeric/time'

@@ -1,0 +1,78 @@
+#!/usr/bin/env ruby
+
+# TODO bulk update
+# TODO ruby-em-pg-client + em-pg-sequel
+# TODO sequel-pg_advisory_locking
+# http://dklab.ru/chicken/nablas/53.html
+# http://forum.dklab.ru/viewtopic.php?t=32211
+# enable_seqscan и enable_bitmapscan в off, enable_tidscan ?
+# https://hashrocket.com/blog/posts/advisory-locks-in-postgres
+# http://www.practiceovertheory.com/blog/2013/07/06/distributed-locking-in-postgres/
+# https://github.com/chanks/que
+
+require File.expand_path(File.join(File.dirname(__FILE__), %w{.. config environment}))
+require 'icmp4em'
+
+Signal.trap('INT') { EventMachine::stop_event_loop }
+Signal.trap('TERM') { EventMachine::stop_event_loop }
+
+ch_tasks = ::EM::Channel.new
+ch_result = ::EM::Channel.new
+
+Ip.clean_orphaned!
+
+EM.run do
+  EM::PeriodicTimer.new(App.config.orphaned_reckeck) do
+    EM.defer do
+      Ip.clean_orphaned!
+    end
+  end
+
+  EM.defer do
+    while true
+      DB.transaction do
+        DB.after_rollback do
+          App.logger.debug { "Wait task_fetch_sleep: #{App.config.task_fetch_sleep}" }
+          sleep(App.config.task_fetch_sleep)
+        end
+        ips = Ip.for_update.enabled.not_checking_now.its_time_to_check.limit(App.config.task_fetch_size).all
+        raise Sequel::Rollback if ips.blank?
+        time = Time.now
+        Ip.where(id: ips.map(&:id)).update(start_checking_at: time)
+        ips.each do |ip|
+          ip.start_checking_at = time
+          App.logger.debug("Enqueue #{ip.inspect}")
+          ch_tasks.push(ip)
+        end
+      end
+    end
+  end
+
+  ch_tasks.subscribe do |ip|
+    ping = ICMP4EM::ICMPv4.new(ip.ip, timeout: App.config.ping_timeout)
+    ping.data = App.name
+    ping.on_success { |host, _, latency| ch_result.push([:ok, host, latency, nil, ip]) }
+    ping.on_expire { |host, _, exception| ch_result.push([:fail, host, nil, exception, ip]) }
+    ping.schedule_one
+  end
+
+  EM.defer do
+    ch_result.subscribe do |result, host, latency, exception, ip|
+      DB.transaction do
+        ip.last_checked_at = ip.start_checking_at
+        ip.start_checking_at = nil
+        ip.save
+
+        if result == :ok
+          st = Statistic.create(created_at: ip.last_checked_at, latency: latency)
+          App.logger.debug { "Ok: #{st.inspect}" }
+        elsif result == :fail
+          fl = Fail.create(created_at: ip.last_checked_at)
+          App.logger.debug { "Fail: #{fl.inspect}" }
+        else
+          fail("Unknown result in response #{[result, host, latency, exception, ip].inspect}")
+        end
+      end
+    end
+  end
+end

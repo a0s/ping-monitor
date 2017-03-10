@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+require File.expand_path(File.join(File.dirname(__FILE__), %w{.. config environment}))
+
+[:ips].each do |table|
+  DB.execute("ALTER TABLE #{table} DISABLE TRIGGER ALL")
+  DB[table].truncate
+  DB.execute("ALTER TABLE #{table} ENABLE TRIGGER ALL")
+end
+
+Ip.create(ip: '8.8.8.8')
+Ip.create(ip: '8.8.4.4')
+Ip.create(ip: '5.255.255.88')
+Ip.create(ip: '182.131.26.231')
