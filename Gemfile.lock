@@ -6,6 +6,16 @@ GIT
       eventmachine
 
 GIT
+  remote: https://github.com/a0s/ruby-app.git
+  revision: 658a02ae5afa4fc209b84ed88313af6f9f5a09ff
+  specs:
+    ruby-app (0.1.12)
+      activesupport
+      bundler
+      rake
+      thor
+
+GIT
   remote: https://github.com/a0s/sequel-rake.git
   revision: bb28c8e2442015157f7cef07bccbcaa904cf1181
   specs:
@@ -44,11 +54,6 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.5.0)
     rspec-support (3.5.0)
-    ruby-app (0.1.12)
-      activesupport
-      bundler
-      rake
-      thor
     sequel (4.44.0)
     sinatra (1.4.8)
       rack (~> 1.5)
@@ -74,7 +79,7 @@ DEPENDENCIES
   pg
   rake
   rspec (~> 3)
-  ruby-app
+  ruby-app!
   sequel
   sequel-rake!
   sinatra

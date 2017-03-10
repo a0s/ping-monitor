@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'rake', require: false
-gem 'ruby-app'
+gem 'ruby-app', git: 'https://github.com/a0s/ruby-app.git'
 gem 'pg'
 gem 'sequel'
 gem 'sequel-rake', git: 'https://github.com/a0s/sequel-rake.git'
