@@ -64,6 +64,45 @@ describe CalcStat do
                                                                                 :med => 3.05) }
     end
 
+    describe 'some fails' do
+      before do
+        ip = Ip.create(ip: '1.2.3.4')
+        Statistic.create(ip_id: ip.id, created_at: Time.at(100), latency: 4.5)
+        Fail.create(ip_id: ip.id, created_at: Time.at(200))
+        Statistic.create(ip_id: ip.id, created_at: Time.at(300), latency: 2.9)
+        Statistic.create(ip_id: ip.id, created_at: Time.at(400), latency: 3.5)
+        Fail.create(ip_id: ip.id, created_at: Time.at(420))
+      end
+      it { expect(CalcStat.new('1.2.3.4', Time.at(0), Time.at(500)).calc).to eq(:fails => 2,
+                                                                                :stats => 3,
+                                                                                :total => 5,
+                                                                                :fails_percent => 40.0,
+                                                                                :avg => 3.63333333333333,
+                                                                                :min => 2.9,
+                                                                                :max => 4.5,
+                                                                                :sdv => 0.808290376865475,
+                                                                                :med => 2.9) }
+    end
+
+    describe 'all fails' do
+      before do
+        ip = Ip.create(ip: '1.2.3.4')
+        Fail.create(ip_id: ip.id, created_at: Time.at(100))
+        Fail.create(ip_id: ip.id, created_at: Time.at(200))
+        Fail.create(ip_id: ip.id, created_at: Time.at(300))
+        Fail.create(ip_id: ip.id, created_at: Time.at(400))
+      end
+      it { expect(CalcStat.new('1.2.3.4', Time.at(0), Time.at(500)).calc).to eq(:fails => 4,
+                                                                                :stats => 0,
+                                                                                :total => 4,
+                                                                                :fails_percent => 100.0,
+                                                                                :avg => nil,
+                                                                                :min => nil,
+                                                                                :max => nil,
+                                                                                :sdv => 0.0,
+                                                                                :med => nil) }
+    end
+
     describe '4 samples with other samples' do
       before do
         ip = Ip.create(ip: '1.2.3.4')
@@ -95,5 +134,10 @@ describe CalcStat do
                                                                                 :sdv => 5.22525916422653,
                                                                                 :med => 10.3) }
     end
+  end
+
+  describe '.calc_all_time' do
+    before { ip = Ip.create(ip: '5.5.3.1') }
+    it { expect(CalcStat.calc_all_time('5.5.3.1')).to eq(total: 0) }
   end
 end

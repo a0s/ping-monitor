@@ -1,15 +1,18 @@
 class CalcStat
   attr_reader :from, :to
 
-  def self.all_time(ip)
-    ip_obj = Ip.find(ip: ip)
+  def self.calc_all_time(ip)
+    ip_obj = ip.is_a?(Ip) ? ip : Ip.find(ip: ip)
+    if ip_obj.events_dataset.stat_or_fail.count == 0
+      return {total: 0}
+    end
     from = ip_obj.events_dataset.stat_or_fail.min(:created_at).to_s
     to = ip_obj.events_dataset.stat_or_fail.max(:created_at).to_s
-    new(ip, from, to)
+    new(ip, from, to).calc
   end
 
   def initialize(ip, from, to)
-    @ip = Ip.find(ip: ip)
+    @ip = ip.is_a?(Ip) ? ip : Ip.find(ip: ip)
 
     if from.is_a?(Fixnum) || from.to_s =~ /\A\d+\z/
       @from = Time.at(from.to_i)
@@ -48,6 +51,7 @@ class CalcStat
     SELECT CASE WHEN c % 2 = 0 AND c > 1 THEN (a[1]+a[2])/2 ELSE a[1] END
     FROM (
     SELECT ARRAY(SELECT latency FROM events WHERE (
+    (latency is not null) AND
     ("ip_id" = #{@ip.id}) AND
     ("created_at" >= '#{from_pg}') AND
     ("created_at" <= '#{to_pg}')
