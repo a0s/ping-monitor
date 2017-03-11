@@ -18,5 +18,6 @@ group :development do
 end
 
 group :test do
-  gem 'rspec', '~>3'
+  gem 'rspec'
+  gem 'database_cleaner'
 end
