@@ -3,21 +3,21 @@
 version: '3'
 services:
 
-#  pinger:
-#    build:
-#      dockerfile: docker/Dockerfile
-#      context: ../
-#    environment:
-#      APP_ENV: production
-#      DB: postgres://pingmonitor:pingmonitor@postgres/pingmonitor
-#      PING_INTERVAL: 5
-#      PING_TIMEOUT: 73
-#    links:
-#      - postgres
-#    restart: on-failure
-#    tty: true
-#    stdin_open: true
-#    command: /bin/bash -c "bundle exec bin/pinger"
+  pinger:
+    build:
+      dockerfile: docker/Dockerfile
+      context: ../
+    environment:
+      APP_ENV: production
+      DB: postgres://pingmonitor:pingmonitor@postgres/pingmonitor
+      PING_INTERVAL: 5
+      PING_TIMEOUT: 73
+    links:
+      - postgres
+    restart: on-failure
+    tty: true
+    stdin_open: true
+    command: /bin/bash -c "bundle exec bin/pinger"
 
   web:
     build:
