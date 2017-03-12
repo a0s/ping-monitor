@@ -30,7 +30,11 @@ curl -X GET "http://localhost:9292/a.b.c.d/stat/all_time" --verbose
 ```
 
 # Settings
-    * LOG_LEVEL
-    * APP_ENV
-    * PING_INTERVAL
-    * PING_TIMEOUT
+    * LOG_LEVEL = debug
+    * APP_ENV = production
+    * PING_INTERVAL = 5 (seconds)
+    * PING_TIMEOUT = 67 (seconds)
+    * ORPHANED_RECKECK = 120 (seconds)
+    * TASK_FETCH_SIZE = 1000 (records)
+    * TASK_FETCH_SLEEP = 1.0 (seconds)
+    * DB = postgres://pingmonitor:pingmonitor@postgres/pingmonitor
