@@ -8,6 +8,10 @@ docker-compose -f compose.yml -p pingmonitor up --force-recreate
 
 # Usage
 ```bash
+#
+# DONT FORGET TO ADD 9292 PORT TO VIRTUALBOX/VMWARE's NAT RULES ON MAC !!!
+#
+
 curl -X POST "http://localhost:9292/5.255.255.88/add" --verbose
 > 200 {}
 curl -X POST "http://localhost:9292/5.255.255.88/remove" --verbose
