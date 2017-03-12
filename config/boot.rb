@@ -3,6 +3,9 @@ require 'rubygems'
 ENV["BUNDLE_GEMFILE"] = File.expand_path("../../Gemfile", __FILE__)
 require 'bundler/setup'
 
+$stdout.sync = true
+$stderr.sync = true
+
 class Application
   class << self
     def root
@@ -11,6 +14,14 @@ class Application
 
     def name
       'pingmonitor'
+    end
+
+    def logger
+      @logger ||= begin
+        logger = Logger.new($stderr)
+        logger.level = App.config.log_level
+        logger
+      end
     end
   end
 end

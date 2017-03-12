@@ -29,7 +29,13 @@ EM.run do
           App.logger.debug { "Wait task_fetch_sleep: #{App.config.task_fetch_sleep}" }
           sleep(App.config.task_fetch_sleep)
         end
-        ips = Ip.for_update.enabled.not_checking_now.its_time_to_check.limit(App.config.task_fetch_size).all
+        ips = Ip.
+            for_update.
+            enabled.
+            not_checking_now.
+            its_time_to_check.
+            limit(App.config.task_fetch_size).
+            all
         raise Sequel::Rollback if ips.blank?
         time = Time.now
         Ip.where(id: ips.map(&:id)).update(start_checking_at: time)

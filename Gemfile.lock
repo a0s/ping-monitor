@@ -1,6 +1,7 @@
 GIT
   remote: https://github.com/a0s/icmp4em.git
-  revision: cdbe550c7e5e7e9b1664bf12b75a91ba0e367d0d
+  revision: 40eef61da51fed895f5dba322cc0ad84205d75d6
+  branch: sock_raw
   specs:
     icmp4em (0.0.3)
       eventmachine

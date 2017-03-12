@@ -2,16 +2,16 @@ require 'json'
 require 'ipaddr'
 
 class PingMonitor < Sinatra::Base
-  configure do
-    set :environment, App.env.to_sym
-    set :logging, App.logger
-  end
+  set :protection, false
+  set :environment, App.env.to_sym
+  set :logging, true
+  set :dump_errors, true
+  set :raise_errors, false
+  set :show_exceptions, false
+  use Rack::CommonLogger, App.logger
 
   helpers do
-    # class A reserved space 10.0.0.0/8
-    # class B reserved space 172.16.0.0/12
-    # class C reserved space 192.168.0.0/16
-    # class E reserved for research 240.0.0.0
+    # TODO add checking for 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16 and 240.0.0.0
     def valid_ipv4?(str)
       IPAddr.new(str).ipv4?
     rescue
@@ -20,36 +20,43 @@ class PingMonitor < Sinatra::Base
   end
 
   before do
+    env['rack.logger'] = App.logger
     content_type 'application/json'
   end
 
   post '/:ip/add' do
-    halt(400) unless valid_ipv4?(params['ip'])
+    halt(400, JSON.dump(error: 'Invalid ip')) unless valid_ipv4?(params['ip'])
     Ip.find_or_create(ip: params['ip']).enable!
-    halt(200)
+    halt(200, JSON.dump({}))
   end
 
   post '/:ip/remove' do
-    halt(400) unless valid_ipv4?(params['ip'])
-    ip = Ip.find(ip: params['ip']) || halt(404)
+    halt(400, JSON.dump(error: 'Invalid ip')) unless valid_ipv4?(params['ip'])
+    ip = Ip.find(ip: params['ip'])
+    halt(404, JSON.dump(error: 'Ip not found')) unless ip
     ip.disable!
-    halt(200)
+    halt(200, JSON.dump({}))
   end
 
   get '/:ip/stat' do
-    halt(400) unless valid_ipv4?(params['ip'])
-    ip = Ip.find(ip: params['ip']) || halt(404)
-    cs = CalcStat.new(ip, params['from'], params['to']) rescue halt(400)
+    halt(400, JSON.dump(error: 'Invalid ip')) unless valid_ipv4?(params['ip'])
+    ip = Ip.find(ip: params['ip'])
+    halt(404, JSON.dump(error: 'Ip not found')) unless ip
+    begin
+      cs = CalcStat.new(ip, params['from'], params['to'])
+    rescue
+      halt(400, JSON.dump(error: 'Invalid "from" or "to"'))
+    end
     result = cs.calc
     halt(404, JSON.dump(result)) if result[:total] == 0
     halt(200, JSON.dump(result))
   end
 
   get '/:ip/stat/all_time' do
-    halt(400) unless valid_ipv4?(params['ip'])
-    ip = Ip.find(ip: params['ip']) || halt(404)
+    halt(400, JSON.dump(error: 'Invalid ip')) unless valid_ipv4?(params['ip'])
+    ip = Ip.find(ip: params['ip'])
+    halt(404, JSON.dump(error: 'Ip not found')) unless ip
     result = CalcStat.calc_all_time(ip)
-
     halt(404, JSON.dump(result)) if result[:total] == 0
     halt(200, JSON.dump(result))
   end

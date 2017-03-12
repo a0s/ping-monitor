@@ -7,7 +7,7 @@ gem 'sequel'
 gem 'sequel-rake', git: 'https://github.com/a0s/sequel-rake.git'
 gem 'activesupport'
 gem 'eventmachine'
-gem 'icmp4em', git: 'https://github.com/a0s/icmp4em.git'
+gem 'icmp4em', git: 'https://github.com/a0s/icmp4em.git', branch: 'sock_raw'
 gem 'sinatra'
 gem 'thin'
 

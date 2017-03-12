@@ -9,15 +9,14 @@ services:
       context: ../
     environment:
       APP_ENV: production
+      LOG_LEVEL: debug
       DB: postgres://pingmonitor:pingmonitor@postgres/pingmonitor
-      PING_INTERVAL: 5
-      PING_TIMEOUT: 73
+      PING_INTERVAL: 60
+      PING_TIMEOUT: 67
     links:
       - postgres
     restart: on-failure
-    tty: true
-    stdin_open: true
-    command: /bin/bash -c "bundle exec bin/pinger"
+    command: /bin/bash -c "bundle exec bin/pinger 1>&2"
 
   web:
     build:
@@ -33,9 +32,7 @@ services:
     expose:
       - 9292
     restart: on-failure
-    tty: true
-    stdin_open: true
-    command: /bin/bash -c "bundle exec rackup --host 0.0.0.0 2>&1"
+    command: /bin/bash -c "bundle exec rackup --host 0.0.0.0 --server thin 1>&2"
 
   postgres:
     image: postgres:alpine
