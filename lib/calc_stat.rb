@@ -45,26 +45,23 @@ class CalcStat
     result.merge!(Hash[k.zip(r.map(k)[0])])
     result[:sdv] ||= 0.0
 
-    from_pg = @from.strftime('%Y-%m-%d %H:%M:%S.%6N%z')
-    to_pg = @to.strftime('%Y-%m-%d %H:%M:%S.%6N%z')
-    mm = %Q(
-    SELECT CASE WHEN c % 2 = 0 AND c > 1 THEN (a[1]+a[2])/2 ELSE a[1] END
-    FROM (
-    SELECT ARRAY(SELECT latency FROM events WHERE (
-    (latency is not null) AND
-    ("ip_id" = #{@ip.id}) AND
-    ("created_at" >= '#{from_pg}') AND
-    ("created_at" <= '#{to_pg}')
-    )ORDER BY created_at OFFSET (c-1)/2 LIMIT 2) AS a, c
-    FROM (SELECT count(*) AS c FROM events WHERE (
-    (latency is not null) AND
-    ("ip_id" = #{@ip.id}) AND
-    ("created_at" >= '#{from_pg}') AND
-    ("created_at" <= '#{to_pg}')
-    ) ) AS count
-    OFFSET 0
-    ) AS midrows)
-    result[:med] = DB[mm].map(:a)[0]
+    if result[:stats] == 0
+      result[:med] = nil
+    else
+      if result[:stats] % 2 == 0
+        a, b = Statistic.
+            where(ip_id: @ip.id, created_at: @from..@to).
+            order(:latency).
+            limit(2, (result[:stats] - 1) / 2).all
+        result[:med] = (a.latency + b.latency) / 2
+      else
+        a = Statistic.
+            where(ip_id: @ip.id, created_at: @from..@to).
+            order(:latency).
+            limit(1, result[:stats] / 2).all
+        result[:med] = a[0].latency
+      end
+    end
     result
   end
 end

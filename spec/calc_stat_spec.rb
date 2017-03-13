@@ -61,7 +61,7 @@ describe CalcStat do
                                                                                 :min => 2.9,
                                                                                 :max => 4.5,
                                                                                 :sdv => 0.694622199472491,
-                                                                                :med => 3.05) }
+                                                                                :med => 3.35) }
     end
 
     describe 'some fails' do
@@ -81,7 +81,7 @@ describe CalcStat do
                                                                                 :min => 2.9,
                                                                                 :max => 4.5,
                                                                                 :sdv => 0.808290376865475,
-                                                                                :med => 2.9) }
+                                                                                :med => 3.5) }
     end
 
     describe 'all fails' do
@@ -123,7 +123,7 @@ describe CalcStat do
                                                                                 :min => 2.9,
                                                                                 :max => 4.5,
                                                                                 :sdv => 0.694622199472491,
-                                                                                :med => 3.05) }
+                                                                                :med => 3.35) }
       it { expect(CalcStat.new('5.6.7.8', Time.at(0), Time.at(500)).calc).to eq(:fails => 0,
                                                                                 :stats => 3,
                                                                                 :total => 3,
@@ -132,7 +132,7 @@ describe CalcStat do
                                                                                 :min => 1.2,
                                                                                 :max => 10.3,
                                                                                 :sdv => 5.22525916422653,
-                                                                                :med => 10.3) }
+                                                                                :med => 1.3) }
     end
   end
 

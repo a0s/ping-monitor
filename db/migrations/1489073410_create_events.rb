@@ -7,7 +7,7 @@ Sequel.migration do
       foreign_key :ip_id, null: false
       Integer :type, index: true, null: false
       Time :created_at, null: false
-      Float :latency
+      Float :latency, index: true
     end
   end
 end
