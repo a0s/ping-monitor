@@ -7,7 +7,7 @@ require File.join(File.dirname(__FILE__), 'boot')
 
 require 'ruby-app/environment'
 
-unless File.exist?("#{App.root}/migrated")
+unless File.exist?("#{App.root}/migrated") || App.env == 'test'
   require 'rake'
   require 'rake_tasks/sequel_rake'
   Rake::Task["db:migrate"].invoke
