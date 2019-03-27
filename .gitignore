@@ -2,7 +2,6 @@
 !tmp/.gitkeep
 *.log
 *.pid
-.ruby-*
 /.idea
 log/*
 tmp/*
